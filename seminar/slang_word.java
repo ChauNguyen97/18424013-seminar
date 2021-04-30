@@ -48,14 +48,14 @@ public class slang_word {
 	}
 
 	public static void PrintSlangWord(HashMap<String, List<String>> tempMap) {
-		for(String name: tempMap.keySet()) {
+		for (String name : tempMap.keySet()) {
 			String key = name.toString();
 			List<String> value = tempMap.get(name);
 			System.out.println("-------------------------------");
 			System.out.println("Slang word: " + key);
 			System.out.println("Definition: ");
-			for(String s: value) {
-				System.out.println("-"+ s);
+			for (String s : value) {
+				System.out.println("-" + s);
 			}
 		}
 	}
@@ -82,6 +82,31 @@ public class slang_word {
 		FindBySlang();
 
 	}
+	
+	public static void FindByDefinition() {
+		System.out.println("Enter a definition: ");
+		String value = sr.next();
+
+		hisList.add(value);
+		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
+		value = value.toLowerCase();
+
+		for (String tmp : dictHashMap.keySet()) {
+			for(String s: dictHashMap.get(tmp)) {
+				if (s.toLowerCase().contains(value)) {
+					tempMap.put(tmp, dictHashMap.get(tmp));
+				}
+			}
+		}
+		if (tempMap.isEmpty()) {
+			System.out.println("Not Found!!!");
+		} else {
+			PrintSlangWord(tempMap);
+		}
+
+		FindByDefinition();
+
+	}
 
 	public slang_word() {
 		// TODO Auto-generated constructor stub
@@ -94,8 +119,9 @@ public class slang_word {
 		 * for (String name : dictHashMap.keySet()) { String key = name.toString();
 		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
 		 * + value); }
+		 * 
+		 * FindBySlang();
 		 */
-		FindBySlang();
-
+		FindByDefinition();
 	}
 }
