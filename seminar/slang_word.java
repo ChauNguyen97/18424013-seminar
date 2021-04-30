@@ -47,41 +47,36 @@ public class slang_word {
 		}
 	}
 
-	public static void PrintSlangWord(List<String> list) {
-		for(String string: list) {
-			for(String name: dictHashMap.keySet()) {
-				if(name == string) {
-					String key = name.toString();
-					System.out.println("-------------------------------");
-					List<String> value = dictHashMap.get(key);
-					System.out.println("Slang word: " + key);
-					System.out.println("Definition: ");
-					for(String s: value) {
-						System.out.println("-"+ s);
-					}
-				}
+	public static void PrintSlangWord(HashMap<String, List<String>> tempMap) {
+		for(String name: tempMap.keySet()) {
+			String key = name.toString();
+			List<String> value = tempMap.get(name);
+			System.out.println("-------------------------------");
+			System.out.println("Slang word: " + key);
+			System.out.println("Definition: ");
+			for(String s: value) {
+				System.out.println("-"+ s);
 			}
 		}
 	}
-	
+
 	public static void FindBySlang() {
 		System.out.println("Enter a slang word: ");
 		String key = sr.next();
 
 		hisList.add(key);
-		List<String> list = new ArrayList<String>();
+		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
 		key = key.toUpperCase();
 
 		for (String tmp : dictHashMap.keySet()) {
 			if (tmp.contains(key)) {
-				list.add(tmp);
+				tempMap.put(tmp, dictHashMap.get(tmp));
 			}
 		}
-		if(list.isEmpty()) {
+		if (tempMap.isEmpty()) {
 			System.out.println("Not Found!!!");
-		}
-		else {
-			PrintSlangWord(list);
+		} else {
+			PrintSlangWord(tempMap);
 		}
 
 		FindBySlang();
