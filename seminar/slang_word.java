@@ -16,6 +16,7 @@ public class slang_word {
 	public static Scanner sr = new java.util.Scanner(System.in);
 	
 	public static void ReadFile(String file_name) {
+
         try {
         	File file =new File(file_name);
         	FileReader fileReader = new FileReader(file);
@@ -48,18 +49,39 @@ public class slang_word {
         }
     }
 
+	public static void FindBySlang() {
+		System.out.println("Enter a slang word: ");
+		String key = sr.next();
+		
+		hisList.add(key);
+		key = key.toUpperCase();
+		if(!dictHashMap.containsKey(key)) {
+			System.out.println("Not Found!!!");
+		}
+		else {
+			List<String> list = dictHashMap.get(key);
+			System.out.println("Definition:");
+			for(String s: list) {
+				System.out.println("-"+s);
+			}
+		}
+		
+	}
+	
 	public slang_word() {
 		// TODO Auto-generated constructor stub
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		ReadFile("slang.txt");
-		for (String name: dictHashMap.keySet()) {
-		    String key = name.toString();
-		    String value = dictHashMap.get(name).toString();
-		    System.out.println(key + " " + value);
-		}
+		ReadFile("F:\\Java\\seminar\\src\\seminar\\slang.txt");
+		//for (String name: dictHashMap.keySet()) {
+		//String key = name.toString();
+		//String value = dictHashMap.get(name).toString();
+		//System.out.println(key + " " + value);}
+		FindBySlang();
+		
 	}
-
 }
+
+
