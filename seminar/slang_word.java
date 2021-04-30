@@ -47,25 +47,45 @@ public class slang_word {
 		}
 	}
 
+	public static void PrintSlangWord(List<String> list) {
+		for(String string: list) {
+			for(String name: dictHashMap.keySet()) {
+				if(name == string) {
+					String key = name.toString();
+					System.out.println("-------------------------------");
+					List<String> value = dictHashMap.get(key);
+					System.out.println("Slang word: " + key);
+					System.out.println("Definition: ");
+					for(String s: value) {
+						System.out.println("-"+ s);
+					}
+				}
+			}
+		}
+	}
+	
 	public static void FindBySlang() {
 		System.out.println("Enter a slang word: ");
 		String key = sr.next();
 
 		hisList.add(key);
+		List<String> list = new ArrayList<String>();
 		key = key.toUpperCase();
-		if (!dictHashMap.containsKey(key)) {
-			System.out.println("Not Found!!!");
-		} else {
-			for (String tmp : dictHashMap.keySet()) {
-				if (tmp.contains(key)) {
-					List<String> list = dictHashMap.get(tmp);
-					System.out.println("Definition:");
-					for (String s : list) {
-						System.out.println("-" + s);
-					}
-				}
+
+		for (String tmp : dictHashMap.keySet()) {
+			if (tmp.contains(key)) {
+				list.add(tmp);
 			}
 		}
+		if(list.isEmpty()) {
+			System.out.println("Not Found!!!");
+		}
+		else {
+			PrintSlangWord(list);
+		}
+
+		FindBySlang();
+
 	}
 
 	public slang_word() {
@@ -75,10 +95,11 @@ public class slang_word {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ReadFile("slang.txt");
-		// for (String name: dictHashMap.keySet()) {
-		// String key = name.toString();
-		// String value = dictHashMap.get(name).toString();
-		// System.out.println(key + " " + value);}
+		/*
+		 * for (String name : dictHashMap.keySet()) { String key = name.toString();
+		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
+		 * + value); }
+		 */
 		FindBySlang();
 
 	}
