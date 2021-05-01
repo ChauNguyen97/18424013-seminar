@@ -148,7 +148,42 @@ public class slang_word {
 			System.out.println("-" + s);
 		}
 	}
-	
+
+	public static void Overwrite(String sl, String de) {
+		List<String> val = new ArrayList<String>();
+		val.add(de);
+		dictHashMap.put(sl.toUpperCase(), val);
+		System.out.println("Add successfully!!!");
+	}
+
+	public static void Duplicate(String sl, String de) {
+		List<String> val = new ArrayList<String>();
+		val = dictHashMap.get(sl);
+		val.add(de);
+		dictHashMap.put(sl.toUpperCase(), val);
+		System.out.println("Add successfully!!!");
+	}
+
+	public static void AddSlang() {
+		System.out.println("Enter Slang word: ");
+		String slang = sr.next();
+		System.out.println("Enter Definition: ");
+		String definition = sr.next();
+		if (dictHashMap.containsKey(slang)) {
+			System.out.println("This Slang word was existed, Choose what you want to: ");
+			System.out.println("1. Overwrite");
+			System.out.println("2. Dupicate");
+			int chose = sr.nextInt();
+			if(chose == 1) {
+				Overwrite(slang, definition);
+			}else {
+				Duplicate(slang, definition);
+			}
+		}else {
+			Overwrite(slang, definition);
+		}
+	}
+
 	public slang_word() {
 		// TODO Auto-generated constructor stub
 	}
@@ -160,8 +195,8 @@ public class slang_word {
 		 * for (String name : dictHashMap.keySet()) { String key = name.toString();
 		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
 		 * + value); }
-		 */ 
+		 */
 		FindBySlang();
-		
+
 	}
 }
