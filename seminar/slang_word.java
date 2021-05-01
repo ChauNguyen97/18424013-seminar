@@ -3,6 +3,7 @@ package seminar;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -79,10 +80,10 @@ public class slang_word {
 			PrintSlangWord(tempMap);
 		}
 
-		FindBySlang();
+		FindByDefinition();
 
 	}
-	
+
 	public static void FindByDefinition() {
 		System.out.println("Enter a definition: ");
 		String value = sr.next();
@@ -92,7 +93,7 @@ public class slang_word {
 		value = value.toLowerCase();
 
 		for (String tmp : dictHashMap.keySet()) {
-			for(String s: dictHashMap.get(tmp)) {
+			for (String s : dictHashMap.get(tmp)) {
 				if (s.toLowerCase().contains(value)) {
 					tempMap.put(tmp, dictHashMap.get(tmp));
 				}
@@ -104,10 +105,50 @@ public class slang_word {
 			PrintSlangWord(tempMap);
 		}
 
-		FindByDefinition();
+		ShowHistory();
 
 	}
 
+	public static void ReadHistory(String file_name) {
+		try {
+			File file = new File(file_name);
+			FileReader fileReader = new FileReader(file);
+			BufferedReader br = new BufferedReader(fileReader);
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				hisList.add(line);
+			}
+
+			fileReader.close();
+			br.close();
+		} catch (Exception ex) {
+			System.out.println("Error: " + ex);
+		}
+	}
+
+	public static void WriteHistory(String file_name) {
+		try {
+			File file = new File(file_name);
+			FileWriter fileWriter = new FileWriter(file);
+
+			for (String s : hisList) {
+				fileWriter.write(s + "\n");
+			}
+			fileWriter.close();
+		} catch (Exception ex) {
+			System.out.println("Error: " + ex);
+		}
+	}
+
+	public static void ShowHistory() {
+		System.out.println("-------------------------------");
+		System.out.println("History Search : ");
+		for (String s : hisList) {
+			System.out.println("-" + s);
+		}
+	}
+	
 	public slang_word() {
 		// TODO Auto-generated constructor stub
 	}
@@ -119,9 +160,8 @@ public class slang_word {
 		 * for (String name : dictHashMap.keySet()) { String key = name.toString();
 		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
 		 * + value); }
-		 * 
-		 * FindBySlang();
-		 */
-		FindByDefinition();
+		 */ 
+		FindBySlang();
+		
 	}
 }
