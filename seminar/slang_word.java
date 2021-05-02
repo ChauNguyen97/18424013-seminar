@@ -149,21 +149,6 @@ public class slang_word {
 		}
 	}
 
-	public static void Overwrite(String sl, String de) {
-		List<String> val = new ArrayList<String>();
-		val.add(de);
-		dictHashMap.put(sl.toUpperCase(), val);
-		System.out.println("Add successfully!!!");
-	}
-
-	public static void Duplicate(String sl, String de) {
-		List<String> val = new ArrayList<String>();
-		val = dictHashMap.get(sl);
-		val.add(de);
-		dictHashMap.put(sl.toUpperCase(), val);
-		System.out.println("Add successfully!!!");
-	}
-
 	public static void AddSlang() {
 		List<String> val = new ArrayList<String>();
 		System.out.println("Enter Slang word: ");
@@ -184,9 +169,70 @@ public class slang_word {
 		} else {
 			val.add(definition);
 		}
-		
+
 		dictHashMap.put(slang, val);
 		System.out.println("Add successfully!!!");
+	}
+	
+	public static void SlangEditing(String slang) {
+		List<String> val = new ArrayList<String>();
+		val = dictHashMap.get(slang);
+		dictHashMap.remove(slang);
+		System.out.println("Enter new Slang word:");
+		slang = sr.nextLine();
+		dictHashMap.put(slang, val);
+		System.out.println("Edit successfully!!");
+	}
+	
+	public static void DefinitionEditing(String slang) {
+		List<String> val = new ArrayList<String>();
+		val = dictHashMap.get(slang);
+		HashMap<String, List<String>> tmpMap = new HashMap<String, List<String>>();
+		tmpMap.put(slang, val);
+		PrintSlangWord(tmpMap);
+		System.out.println("The definition you want to change:");
+		String deChange = sr.nextLine();
+		deChange = deChange.toLowerCase();
+		for(String s: val) {
+			if(deChange.contains(s.toLowerCase())) {
+				System.out.println("1.Delete or 2.Edit definition?");
+				System.out.print("Your choise:");
+				int choice = sr.nextInt();
+				val.remove(s);
+				if(choice == 2) {
+					System.out.println("Enter new definition:");
+					s = sr.nextLine();
+				}
+				break;
+			}
+		}
+		dictHashMap.put(slang, val);
+		System.out.println("Edit successfully!!");
+	}
+	
+	public static void EditSlang() {
+		
+		System.out.println("Enter Slang word you want to edit:");
+		String slang = sr.nextLine();
+		slang = slang.toUpperCase();
+		if (!dictHashMap.containsKey(slang)) {
+            System.out.println("This slang doesn't match!!!");
+        }else {
+        	System.out.println("What do you want to change?");
+        	System.out.println("1. Slang word");
+        	System.out.println("2. Definition");
+        	System.out.print("Your choice:");
+        	int choice = sr.nextInt();
+        	while (choice != 1 || choice != 2) {
+        		System.out.print("Please, your choice(1 or 2):");
+            	choice = sr.nextInt();
+			}
+        	if(choice == 1) {
+        		SlangEditing(slang);
+        	}else {
+				DefinitionEditing(slang);
+			}
+        }
 	}
 
 	public slang_word() {
