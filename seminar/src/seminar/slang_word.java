@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,25 +20,22 @@ public class slang_word {
 	public static ArrayList<String> hisList = new ArrayList<String>();
 	public static Scanner sr = new java.util.Scanner(System.in);
 
+	//https://stackoverflow.com/questions/2979383/java-clear-the-console
 	public final static void clearScreen() {
 		try {
-			final String os = System.getProperty("os.name");
-
-			if (os.contains("Windows")) {
-				Runtime.getRuntime().exec("cls");
-			} else {
+			if (System.getProperty("os.name").contains("Windows"))
+				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			else
 				Runtime.getRuntime().exec("clear");
-			}
-		} catch (final Exception e) {
+		} catch (IOException | InterruptedException ex) {
 		}
-
 	}
-
-	public static void PauseTest(){
-        System.out.println("Press Any Key To Continue...");
-        String nextLine = new java.util.Scanner(System.in).nextLine();
-    }
-	
+	//https://stackoverflow.com/questions/6032118/make-the-console-wait-for-a-user-input-to-close
+	public static void PauseTest() {
+		System.out.println("Press Any Key To Continue...");
+		String nextLine = new java.util.Scanner(System.in).nextLine();
+	}
+	//https://mkyong.com/java/how-to-read-utf-8-encoded-data-from-a-file-java/
 	public static void ReadFile(String file_name) {
 
 		try {
@@ -65,6 +63,27 @@ public class slang_word {
 			}
 			fileReader.close();
 			bReader.close();
+		} catch (Exception ex) {
+			System.out.println("Error: " + ex);
+		}
+	}
+
+	public static void WriteFile(String file_name) {
+		try {
+			File f = new File(file_name);
+			FileWriter fw = new FileWriter(f);
+			for (String key : dictHashMap.keySet()) {
+				fw.write(key + "`");
+				List<String> tmp = dictHashMap.get(key);
+				int i = 0;
+				for (i = 0; i < tmp.size() - 1; i++) {
+					fw.write(tmp.get(i) + "| ");
+				}
+				fw.write(tmp.get(i) + "\n");
+			}
+
+			fw.close();
+
 		} catch (Exception ex) {
 			System.out.println("Error: " + ex);
 		}
@@ -102,7 +121,7 @@ public class slang_word {
 		}
 		PauseTest();
 		MenuSearch();
-	
+
 	}
 
 	public static void FindByDefinition() {
@@ -124,7 +143,7 @@ public class slang_word {
 		} else {
 			PrintSlangWord(tempMap);
 		}
-		
+		PauseTest();
 		MenuSearch();
 	}
 
@@ -166,7 +185,7 @@ public class slang_word {
 		for (String s : hisList) {
 			System.out.println("-" + s);
 		}
-	
+		PauseTest();
 		MenuSearch();
 	}
 
@@ -193,6 +212,8 @@ public class slang_word {
 
 		dictHashMap.put(slang, val);
 		System.out.println("Add successfully!!!");
+		PauseTest();
+		MenuDictionary();
 	}
 
 	public static void SlangEditing(String slang) {
@@ -200,9 +221,11 @@ public class slang_word {
 		val = dictHashMap.get(slang);
 		dictHashMap.remove(slang);
 		System.out.println("Enter new Slang word:");
-		slang = sr.nextLine();
+		slang = sr.next();
 		dictHashMap.put(slang, val);
 		System.out.println("Edit successfully!!");
+		PauseTest();
+		MenuDictionary();
 	}
 
 	public static void DefinitionEditing(String slang) {
@@ -212,7 +235,7 @@ public class slang_word {
 		tmpMap.put(slang, val);
 		PrintSlangWord(tmpMap);
 		System.out.println("The definition you want to change:");
-		String deChange = sr.nextLine();
+		String deChange = sr.next();
 		deChange = deChange.toLowerCase();
 		for (String s : val) {
 			if (deChange.contains(s.toLowerCase())) {
@@ -222,9 +245,12 @@ public class slang_word {
 				val.remove(s);
 				if (choice == 2) {
 					System.out.println("Enter new definition:");
-					s = sr.nextLine();
+					s = sr.next();
 				}
-				break;
+				val.add(s);
+				dictHashMap.put(slang, val);
+				System.out.println("Edit successfully!!");
+				return;
 			}
 		}
 		dictHashMap.put(slang, val);
@@ -233,7 +259,7 @@ public class slang_word {
 
 	public static void EditSlang() {
 		System.out.println("Enter Slang word you want to edit:");
-		String slang = sr.nextLine();
+		String slang = sr.next();
 		slang = slang.toUpperCase();
 		if (!dictHashMap.containsKey(slang)) {
 			System.out.println("This slang doesn't match!!!");
@@ -243,35 +269,34 @@ public class slang_word {
 			System.out.println("2. Definition");
 			System.out.print("Your choice:");
 			int choice = sr.nextInt();
-			while (choice != 1 || choice != 2) {
-				System.out.print("Please, your choice(1 or 2):");
-				choice = sr.nextInt();
-			}
 			if (choice == 1) {
 				SlangEditing(slang);
 			} else {
 				DefinitionEditing(slang);
 			}
 		}
+		PauseTest();
+		MenuDictionary();
 	}
 
 	public static void DeleteSlang() {
 		System.out.println("Enter Slang word you want to delete:");
-		String slang = sr.nextLine();
+		String slang = sr.next();
 		slang = slang.toUpperCase();
 		if (!dictHashMap.containsKey(slang)) {
 			System.out.println("This slang doesn't match!!!");
 		} else {
-			System.out.println("Do you want to delete?(y/n)");
-			String as = sr.nextLine();
-			as = as.toLowerCase();
-			if (as == "y") {
+			System.out.println("Do you want to delete?(1. yes/0. no)");
+			int as = sr.nextInt();
+			if (as == 1) {
 				dictHashMap.remove(slang);
 				System.out.println("Deleted!!!");
 			} else {
 				System.out.println("Not deleted!!");
 			}
 		}
+		PauseTest();
+		MenuDictionary();
 	}
 
 	public static void ResetDict() {
@@ -282,6 +307,8 @@ public class slang_word {
 		} else {
 			System.out.println("Reset fail!!!");
 		}
+		PauseTest();
+		MenuDictionary();
 	}
 
 	public static String RandomSlang(HashMap<String, List<String>> tmpMap) {
@@ -293,8 +320,10 @@ public class slang_word {
 		String slang = RandomSlang(dictHashMap);
 		HashMap<String, List<String>> tmpMap = new HashMap<String, List<String>>();
 		tmpMap.put(slang, dictHashMap.get(slang));
+		System.out.println("------------------------------");
 		System.out.println("Random slang word for today:");
 		PrintSlangWord(tmpMap);
+		System.out.println("------------------------------");
 	}
 
 	public static void Game4Slang() {
@@ -326,6 +355,8 @@ public class slang_word {
 		} else {
 			System.out.println(">>> You losed the game!!!");
 		}
+		PauseTest();
+		MenuGame();
 	}
 
 	public static void Game4Definition() {
@@ -356,50 +387,164 @@ public class slang_word {
 		} else {
 			System.out.println(">>> You losed the game!!!");
 		}
+		PauseTest();
+		MenuGame();
 	}
 
 	public static void MainMenu() {
-		System.out.println("Main Menu");
+		System.out.println("---------MENU---------");
+		int num;
+		System.out.println("1. Search.");
+		System.out.println("2. Change Dictionary.");
+		System.out.println("3. Play fun game.");
+		System.out.println("0. Exit.");
+		System.out.print("Your choice: ");
+		num = sr.nextInt();
+
+		switch (num) {
+		case 0: {
+			WriteHistory("history.txt");
+			WriteFile("dict_slangs.txt");
+			System.exit(0);
+			;
+			break;
+		}
+		case 1: {
+			MenuSearch();
+			;
+			break;
+		}
+		case 2: {
+			MenuDictionary();
+			;
+			break;
+		}
+		case 3: {
+			MenuGame();
+			;
+			break;
+		}
+		default:
+			System.out.println("Please, choice 0 to 3!!!");
+			MainMenu();
+		}
 	}
 
 	public static void MenuSearch() {
 		int num;
+		clearScreen();
 		System.out.println("--------MENU SEARCH--------");
 		System.out.println("1. Search by Slang word.");
 		System.out.println("2. Search by Definition.");
 		System.out.println("3. History search.");
 		System.out.println("0. Back to MAIN MENU.");
 		System.out.print("Your choice: ");
-		num= sr.nextInt();
-		
-		if (num == 1) {
-			FindBySlang();
-		} else if (num == 2) {
-			FindByDefinition();
-		} else if (num == 3) {
-			ShowHistory();
-		} else {
+		num = sr.nextInt();
+
+		switch (num) {
+		case 0: {
 			MainMenu();
+			break;
+		}
+		case 1: {
+			FindBySlang();
+			break;
+		}
+		case 2: {
+			FindByDefinition();
+			break;
+		}
+		case 3: {
+			ShowHistory();
+			break;
+		}
+		default:
+			System.out.println("Please, choice 0 to 3!!!");
+			MenuSearch();
+		}
+
+	}
+
+	public static void MenuDictionary() {
+		int num;
+		clearScreen();
+		System.out.println("--------MENU DICTIONARY--------");
+		System.out.println("1. Add Slang word.");
+		System.out.println("2. Edit Slang word.");
+		System.out.println("3. Delete Slang word.");
+		System.out.println("4. Reset dictionary.");
+		System.out.println("0. Back to MAIN MENU.");
+		System.out.print("Your choice: ");
+		num = sr.nextInt();
+
+		switch (num) {
+		case 0: {
+			MainMenu();
+			break;
+		}
+		case 1: {
+			AddSlang();
+			break;
+		}
+		case 2: {
+			EditSlang();
+			break;
+		}
+		case 3: {
+			DeleteSlang();
+			break;
+		}
+		case 4: {
+			ResetDict();
+			break;
+		}
+		default:
+			System.out.println("Please, choice 0 to 4!!!");
+			MenuDictionary();
+		}
+
+	}
+
+	public static void MenuGame() {
+		int num;
+		clearScreen();
+		System.out.println("--------MENU GAME--------");
+		System.out.println("1. Find Definition by Slang word.");
+		System.out.println("2. Find Slang word by Definition.");
+		System.out.println("0. Back to MAIN MENU.");
+		System.out.print("Your choice: ");
+		num = sr.nextInt();
+
+		switch (num) {
+		case 0: {
+			MainMenu();
+			break;
+		}
+		case 1: {
+			Game4Slang();
+			break;
+		}
+		case 2: {
+			Game4Definition();
+			break;
+		}
+		default:
+			System.out.println("Please, choice 0 to 2!!!");
+			MenuGame();
 		}
 
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		ReadFile("slang.txt");
+		ReadFile("dict_slangs.txt");
+		if (dictHashMap.isEmpty()) {
+			ReadFile("slang.txt");
+		}
+		ReadHistory("history.txt");
+		SlangOfTheDay();
 
-		/*
-		 * for (String name : dictHashMap.keySet()) { String key = name.toString();
-		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
-		 * + value); }
-		 */
-
-		/*
-		 * AddSlang(); EditSlang(); DeleteSlang(); FindBySlang();
-		 * RandomSlang(dictHashMap); ResetDict();
-		 */
-
-		MenuSearch();
+		MainMenu();
 
 	}
 }
