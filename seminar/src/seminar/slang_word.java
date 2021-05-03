@@ -2,8 +2,10 @@ package seminar;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,11 +19,30 @@ public class slang_word {
 	public static ArrayList<String> hisList = new ArrayList<String>();
 	public static Scanner sr = new java.util.Scanner(System.in);
 
+	public final static void clearScreen() {
+		try {
+			final String os = System.getProperty("os.name");
+
+			if (os.contains("Windows")) {
+				Runtime.getRuntime().exec("cls");
+			} else {
+				Runtime.getRuntime().exec("clear");
+			}
+		} catch (final Exception e) {
+		}
+
+	}
+
+	public static void PauseTest(){
+        System.out.println("Press Any Key To Continue...");
+        String nextLine = new java.util.Scanner(System.in).nextLine();
+    }
+	
 	public static void ReadFile(String file_name) {
 
 		try {
 			File file = new File(file_name);
-			FileReader fileReader = new FileReader(file);
+			InputStreamReader fileReader = new InputStreamReader(new FileInputStream(file), "utf8");
 
 			BufferedReader bReader = new BufferedReader(fileReader);
 			String line;
@@ -62,44 +83,26 @@ public class slang_word {
 		}
 	}
 
-	public static HashMap<String, List<String>> findBySlang(String key) {
-		HashMap<String, List<String>> temp = new HashMap<String, List<String>>();
+	public static void FindBySlang() {
+		System.out.println("Enter Slang word:");
+		String slang = sr.next();
+
+		hisList.add(slang);
+		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
+		slang = slang.toLowerCase();
 		for (String tmp : dictHashMap.keySet()) {
-			if (tmp.contains(key)) {
-				temp.put(tmp, dictHashMap.get(tmp));
+			if (tmp.toLowerCase().contains(slang)) {
+				tempMap.put(tmp, dictHashMap.get(tmp));
 			}
 		}
-		return temp;
-	}
-
-	public static void FindBySlang() {
-		System.out.println("Enter a slang word: ");
-		String key = sr.next();
-
-		hisList.add(key);
-		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
-		key = key.toUpperCase();
-		tempMap = findBySlang(key);
 		if (tempMap.isEmpty()) {
 			System.out.println("Not Found!!!");
 		} else {
 			PrintSlangWord(tempMap);
 		}
-
-		FindByDefinition();
-
-	}
-
-	public static HashMap<String, List<String>> findByDefinition(String val) {
-		HashMap<String, List<String>> temp = new HashMap<String, List<String>>();
-		for (String tmp : dictHashMap.keySet()) {
-			for (String s : dictHashMap.get(tmp)) {
-				if (s.toLowerCase().contains(val)) {
-					temp.put(tmp, dictHashMap.get(tmp));
-				}
-			}
-		}
-		return temp;
+		PauseTest();
+		MenuSearch();
+	
 	}
 
 	public static void FindByDefinition() {
@@ -109,15 +112,20 @@ public class slang_word {
 		hisList.add(value);
 		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
 		value = value.toLowerCase();
-		tempMap = findByDefinition(value);
+		for (String tmp : dictHashMap.keySet()) {
+			for (String s : dictHashMap.get(tmp)) {
+				if (s.toLowerCase().contains(value)) {
+					tempMap.put(tmp, dictHashMap.get(tmp));
+				}
+			}
+		}
 		if (tempMap.isEmpty()) {
 			System.out.println("Not Found!!!");
 		} else {
 			PrintSlangWord(tempMap);
 		}
-
-		ShowHistory();
-
+		
+		MenuSearch();
 	}
 
 	public static void ReadHistory(String file_name) {
@@ -158,6 +166,8 @@ public class slang_word {
 		for (String s : hisList) {
 			System.out.println("-" + s);
 		}
+	
+		MenuSearch();
 	}
 
 	public static void AddSlang() {
@@ -290,7 +300,7 @@ public class slang_word {
 	public static void Game4Slang() {
 		// clone hashmap
 		HashMap<String, List<String>> temp = new HashMap<String, List<String>>(dictHashMap);
-		
+
 		Random random = new Random();
 		List<String> choice = new ArrayList<String>();
 		for (int i = 0; i < 4; i++) {
@@ -298,47 +308,98 @@ public class slang_word {
 			choice.add(randomString);
 			temp.remove(randomString); // dam bao dap an khong trung
 		}
-		
+
 		String question = choice.get(random.nextInt(choice.size()));
-		
-		System.out.println("Slang word: "+ question);
+
+		System.out.println("Slang word: " + question);
 		System.out.println("What is the definition of the above Slang word? Choose your answer (1-4)");
 		int number = 1;
-		for(String s: choice) {
-			List<String> val =  new ArrayList<String>();
-			val = dictHashMap.get(s);
-			String answer = val.toString();
+		for (String s : choice) {
+			String answer = dictHashMap.get(s).toString();
 			System.out.println(number + ". " + answer);
 			number++;
 		}
 		System.out.print("Your answer: ");
 		int right = sr.nextInt();
-		if(choice.get(right-1).equals(question)) {
+		if (choice.get(right - 1).equals(question)) {
 			System.out.println(">>> Congratulation! You won the game!!!");
-		}
-		else {
+		} else {
 			System.out.println(">>> You losed the game!!!");
 		}
 	}
 
-	public slang_word() {
-		// TODO Auto-generated constructor stub
+	public static void Game4Definition() {
+		// clone hashmap
+		HashMap<String, List<String>> temp = new HashMap<String, List<String>>(dictHashMap);
+
+		Random random = new Random();
+		List<String> choice = new ArrayList<String>();
+		for (int i = 0; i < 4; i++) {
+			String randomString = RandomSlang(temp);
+			choice.add(randomString);
+			temp.remove(randomString); // dam bao dap an khong trung
+		}
+
+		String question = choice.get(random.nextInt(choice.size()));
+
+		System.out.println("Definition: " + dictHashMap.get(question).toString());
+		System.out.println("What is the Slang word of the above definition? Choose your answer (1-4)");
+		int number = 1;
+		for (String s : choice) {
+			System.out.println(number + ". " + s);
+			number++;
+		}
+		System.out.print("Your answer: ");
+		int right = sr.nextInt();
+		if (choice.get(right - 1).equals(question)) {
+			System.out.println(">>> Congratulation! You won the game!!!");
+		} else {
+			System.out.println(">>> You losed the game!!!");
+		}
+	}
+
+	public static void MainMenu() {
+		System.out.println("Main Menu");
+	}
+
+	public static void MenuSearch() {
+		int num;
+		System.out.println("--------MENU SEARCH--------");
+		System.out.println("1. Search by Slang word.");
+		System.out.println("2. Search by Definition.");
+		System.out.println("3. History search.");
+		System.out.println("0. Back to MAIN MENU.");
+		System.out.print("Your choice: ");
+		num= sr.nextInt();
+		
+		if (num == 1) {
+			FindBySlang();
+		} else if (num == 2) {
+			FindByDefinition();
+		} else if (num == 3) {
+			ShowHistory();
+		} else {
+			MainMenu();
+		}
+
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		ReadFile("slang.txt");
+
 		/*
 		 * for (String name : dictHashMap.keySet()) { String key = name.toString();
 		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
 		 * + value); }
 		 */
+
 		/*
 		 * AddSlang(); EditSlang(); DeleteSlang(); FindBySlang();
 		 * RandomSlang(dictHashMap); ResetDict();
 		 */
-		Game4Slang();
-		
+
+		MenuSearch();
 
 	}
 }
