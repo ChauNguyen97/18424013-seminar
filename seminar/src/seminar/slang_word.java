@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class slang_word {
@@ -253,7 +254,31 @@ public class slang_word {
 			}
 		}
 	}
+	
+	public static void ResetDict() {
+		dictHashMap.clear();
+		if(dictHashMap.isEmpty()) {
+			ReadFile("slang.txt");
+			System.out.println("Reset successfully!!");
+		}else {
+			System.out.println("Reset fail!!!");
+		}
+	}
+	
+	public static String RandomSlang() {
+		Object[] slang = dictHashMap.keySet().toArray();
+		return slang[new Random().nextInt(slang.length)].toString();
+	}
 
+	public static void SlangOfTheDay() {
+		String slang = RandomSlang();
+		HashMap<String, List<String>> tmpMap = new HashMap<String, List<String>>();
+		tmpMap.put(slang, dictHashMap.get(slang));
+		System.out.println("Random slang word for today:");
+		PrintSlangWord(tmpMap);
+		
+	}
+	
 	public slang_word() {
 		// TODO Auto-generated constructor stub
 	}
@@ -270,6 +295,8 @@ public class slang_word {
 		EditSlang();
 		DeleteSlang();
 		FindBySlang();
+		RandomSlang();
+		ResetDict();
 
 	}
 }
