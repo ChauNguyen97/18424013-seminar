@@ -62,6 +62,16 @@ public class slang_word {
 		}
 	}
 
+	public static HashMap<String, List<String>> findBySlang(String key) {
+		HashMap<String, List<String>> temp = new HashMap<String, List<String>>();
+		for (String tmp : dictHashMap.keySet()) {
+			if (tmp.contains(key)) {
+				temp.put(tmp, dictHashMap.get(tmp));
+			}
+		}
+		return temp;
+	}
+
 	public static void FindBySlang() {
 		System.out.println("Enter a slang word: ");
 		String key = sr.next();
@@ -69,12 +79,7 @@ public class slang_word {
 		hisList.add(key);
 		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
 		key = key.toUpperCase();
-
-		for (String tmp : dictHashMap.keySet()) {
-			if (tmp.contains(key)) {
-				tempMap.put(tmp, dictHashMap.get(tmp));
-			}
-		}
+		tempMap = findBySlang(key);
 		if (tempMap.isEmpty()) {
 			System.out.println("Not Found!!!");
 		} else {
@@ -85,6 +90,18 @@ public class slang_word {
 
 	}
 
+	public static HashMap<String, List<String>> findByDefinition(String val) {
+		HashMap<String, List<String>> temp = new HashMap<String, List<String>>();
+		for (String tmp : dictHashMap.keySet()) {
+			for (String s : dictHashMap.get(tmp)) {
+				if (s.toLowerCase().contains(val)) {
+					temp.put(tmp, dictHashMap.get(tmp));
+				}
+			}
+		}
+		return temp;
+	}
+
 	public static void FindByDefinition() {
 		System.out.println("Enter a definition: ");
 		String value = sr.next();
@@ -92,14 +109,7 @@ public class slang_word {
 		hisList.add(value);
 		HashMap<String, List<String>> tempMap = new HashMap<String, List<String>>();
 		value = value.toLowerCase();
-
-		for (String tmp : dictHashMap.keySet()) {
-			for (String s : dictHashMap.get(tmp)) {
-				if (s.toLowerCase().contains(value)) {
-					tempMap.put(tmp, dictHashMap.get(tmp));
-				}
-			}
-		}
+		tempMap = findByDefinition(value);
 		if (tempMap.isEmpty()) {
 			System.out.println("Not Found!!!");
 		} else {
@@ -211,8 +221,7 @@ public class slang_word {
 		System.out.println("Edit successfully!!");
 	}
 
-	public static void EditSlang()
-	{
+	public static void EditSlang() {
 		System.out.println("Enter Slang word you want to edit:");
 		String slang = sr.nextLine();
 		slang = slang.toUpperCase();
@@ -249,36 +258,69 @@ public class slang_word {
 			if (as == "y") {
 				dictHashMap.remove(slang);
 				System.out.println("Deleted!!!");
-			}else {
+			} else {
 				System.out.println("Not deleted!!");
 			}
 		}
 	}
-	
+
 	public static void ResetDict() {
 		dictHashMap.clear();
-		if(dictHashMap.isEmpty()) {
+		if (dictHashMap.isEmpty()) {
 			ReadFile("slang.txt");
 			System.out.println("Reset successfully!!");
-		}else {
+		} else {
 			System.out.println("Reset fail!!!");
 		}
 	}
-	
-	public static String RandomSlang() {
-		Object[] slang = dictHashMap.keySet().toArray();
+
+	public static String RandomSlang(HashMap<String, List<String>> tmpMap) {
+		Object[] slang = tmpMap.keySet().toArray();
 		return slang[new Random().nextInt(slang.length)].toString();
 	}
 
 	public static void SlangOfTheDay() {
-		String slang = RandomSlang();
+		String slang = RandomSlang(dictHashMap);
 		HashMap<String, List<String>> tmpMap = new HashMap<String, List<String>>();
 		tmpMap.put(slang, dictHashMap.get(slang));
 		System.out.println("Random slang word for today:");
 		PrintSlangWord(tmpMap);
-		
 	}
-	
+
+	public static void Game4Slang() {
+		// clone hashmap
+		HashMap<String, List<String>> temp = new HashMap<String, List<String>>(dictHashMap);
+		
+		Random random = new Random();
+		List<String> choice = new ArrayList<String>();
+		for (int i = 0; i < 4; i++) {
+			String randomString = RandomSlang(temp);
+			choice.add(randomString);
+			temp.remove(randomString); // dam bao dap an khong trung
+		}
+		
+		String question = choice.get(random.nextInt(choice.size()));
+		
+		System.out.println("Slang word: "+ question);
+		System.out.println("What is the definition of the above Slang word? Choose your answer (1-4)");
+		int number = 1;
+		for(String s: choice) {
+			List<String> val =  new ArrayList<String>();
+			val = dictHashMap.get(s);
+			String answer = val.toString();
+			System.out.println(number + ". " + answer);
+			number++;
+		}
+		System.out.print("Your answer: ");
+		int right = sr.nextInt();
+		if(choice.get(right-1).equals(question)) {
+			System.out.println(">>> Congratulation! You won the game!!!");
+		}
+		else {
+			System.out.println(">>> You losed the game!!!");
+		}
+	}
+
 	public slang_word() {
 		// TODO Auto-generated constructor stub
 	}
@@ -291,12 +333,12 @@ public class slang_word {
 		 * String value = dictHashMap.get(name).toString(); System.out.println(key + " "
 		 * + value); }
 		 */
-		AddSlang();
-		EditSlang();
-		DeleteSlang();
-		FindBySlang();
-		RandomSlang();
-		ResetDict();
+		/*
+		 * AddSlang(); EditSlang(); DeleteSlang(); FindBySlang();
+		 * RandomSlang(dictHashMap); ResetDict();
+		 */
+		Game4Slang();
+		
 
 	}
 }
